@@ -1,1 +1,1 @@
-# Multipurpose-Image-Viewer
+# 多目的画像ビューワーにようそこ
