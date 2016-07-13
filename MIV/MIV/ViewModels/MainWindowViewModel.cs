@@ -10,6 +10,7 @@ using Livet.Messaging;
 using Livet.Messaging.IO;
 using Livet.EventListeners;
 using Livet.Messaging.Windows;
+using System.Windows.Input;
 
 using MIV.Models;
 
@@ -58,9 +59,108 @@ namespace MIV.ViewModels
          * LivetのViewModelではプロパティ変更通知(RaisePropertyChanged)やDispatcherCollectionを使ったコレクション変更通知は
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
-
         public void Initialize()
         {
         }
+
+
+        BookShelf m_bookShelf;
+        public BookShelf BookShelf
+        {
+            get
+            {
+                if (m_bookShelf == null)
+                {
+                    m_bookShelf = new BookShelf();
+                }
+                return m_bookShelf;
+            }
+        }
+
+        ReadOnlyDispatcherCollection<BookViewModel> m_books;
+        public ReadOnlyDispatcherCollection<BookViewModel> Books
+        {
+            get
+            {
+                if (m_books == null)
+                {
+                    m_books = ViewModelHelper.CreateReadOnlyDispatcherCollection(BookShelf.Books
+                        , m => new BookViewModel(m, this)
+                        , DispatcherHelper.UIDispatcher
+                        );
+                    CompositeDisposable.Add(m_books);
+                }
+                return m_books;
+            }
+        }
+
+        Livet.Commands.ViewModelCommand m_nextPageCommand;
+        public ICommand NextPageCommand
+        {
+            get
+            {
+                if (m_nextPageCommand == null)
+                {
+                    m_nextPageCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        foreach (var m in Books.ToArray())
+                        {
+                            m.NextPageCommand.Execute(null);
+                        }
+                    });
+                }
+                return m_nextPageCommand;
+            }
+
+        }
     }
+      
+    public class BookViewModel : Livet.ViewModel
+    {
+        Book m_book;
+        MainWindowViewModel m_bookShelf;
+                
+        public BookViewModel(Book book, MainWindowViewModel bookShelf)
+        {
+            m_book = book;
+            m_bookShelf = bookShelf;
+        }
+
+
+        public String Name
+        {
+            get { return m_book.Name; }
+            set { m_book.Name = value; }
+        }
+
+        public String Path
+        {
+            get { return m_book.Path; }
+            set { m_book.Path = value; }
+        }
+
+        public String CurrentPage
+        {
+            get { return m_book.CurrentPage; }
+            set { m_book.CurrentPage = value; }
+        }
+
+        Livet.Commands.ViewModelCommand m_nextPageCommand;
+        public ICommand NextPageCommand
+        {
+            get
+            {
+                if (m_nextPageCommand == null)
+                {
+                    m_nextPageCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        m_book.NextPage();                   
+                    });
+                }
+                return m_nextPageCommand;
+            }
+        }
+    }   
+
+                
 }
