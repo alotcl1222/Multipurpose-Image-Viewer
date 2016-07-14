@@ -86,10 +86,23 @@ namespace MIV.Models
                 {
                     m_books = new ObservableSynchronizedCollection<Book>
                     {
-                        new Book(this) {Name = "hoge", Path="./", CurrentPage=System.Environment.CurrentDirectory+@"\media\0001.jpg" }
+                        new Book(this) {Name = "hoge", Path="./", CurrentPage=System.Environment.CurrentDirectory+@"\media\0001.jpg" } 
                     };
+                    this.CurrentBookName = "hoge";
                 }
                 return m_books;
+            }
+        }
+
+        String m_currentBookName;
+        public String CurrentBookName
+        {
+            get { return m_currentBookName; }
+            set
+            {
+                if (m_currentBookName == value) return;
+                m_currentBookName = value;
+                RaisePropertyChanged("CurrentBookName");
             }
         }
     }

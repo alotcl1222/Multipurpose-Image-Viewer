@@ -102,11 +102,9 @@ namespace MIV.ViewModels
                 if (m_nextPageCommand == null)
                 {
                     m_nextPageCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {
-                        foreach (var m in Books.ToArray())
-                        {
-                            m.NextPageCommand.Execute(null);
-                        }
+                    {                                                       
+                        var book = Books.FirstOrDefault(x => x.Name == BookShelf.CurrentBookName);
+                        if(book != null) book.NextPageCommand.Execute(null);
                     });
                 }
                 return m_nextPageCommand;
