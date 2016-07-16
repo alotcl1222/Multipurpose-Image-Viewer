@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text;   
 
 using Livet;
 
@@ -14,14 +14,12 @@ namespace MIV.Models
         INode Parent { get; set; }
         ObservableSynchronizedCollection<INode> Children { get; set; }
         void Remove(INode node);
-        void Add(INode node);
+        void Add(INode node, bool isDir);
         string Path { get; set; }
         INode Next { get; set; }
         INode Prev { get; set; }
         bool HasNext { get; }
-        bool HasPrev { get; }
-        void GoNext();
-        void GoPrev();
+        bool HasPrev { get; }    
         INode FindRoot();
         bool IsDir { get; set; }
     }
@@ -63,7 +61,7 @@ namespace MIV.Models
             throw new InvalidOperationException();
         }
 
-        public virtual void Add(INode node)
+        public virtual void Add(INode node, bool isDir)
         {
             throw new InvalidOperationException();
         }
@@ -94,26 +92,8 @@ namespace MIV.Models
         public virtual bool HasPrev
         {
             get { return m_prev != default(INode); }
-        }
-
-        public virtual void GoNext()
-        {
-            if (!this.HasNext) throw new InvalidOperationException();
-            this.Name = this.Next.Name;
-            this.Next = this.Next.Next;
-            this.Path = this.Next.Path;
-            this.Prev = this.Next.Prev;
-        }
-
-        public virtual void GoPrev()
-        {
-            if (!this.HasPrev) throw new InvalidOperationException();
-            this.Name = this.Prev.Name;
-            this.Next = this.Prev.Next;
-            this.Path = this.Prev.Path;
-            this.Prev = this.Prev.Prev;
-        }
-
+        }            
+                                           
         public virtual INode FindRoot()
         {
             if (this.m_parent == null) return this;
@@ -134,11 +114,13 @@ namespace MIV.Models
 
     public class Book : AbstractNode
     {
+        public string FolderPath { get; set; }
+
         public Book(string path="")
         {
             this.Name = "root";
             this.IsDir = true;
-            this.Path = path;
+            this.FolderPath = path;
         }
 
         ObservableSynchronizedCollection<INode> m_children;
@@ -154,29 +136,35 @@ namespace MIV.Models
             RaisePropertyChanged("Children");
         }
 
-        public override void Add(INode node)
+        public override void Add(INode node, bool isDir)
         {
             if (m_children == null)
             {
                 m_children = new ObservableSynchronizedCollection<INode> { };
             }
-            node.Parent = this;
+            node.Parent = this; 
             m_children.Add(node);
+
+            if (isDir)
+            {
+                this.AddPages((Book)node);
+                node.Path = System.Environment.CurrentDirectory + @"\media\folder.jpg";
+            }
+
             RaisePropertyChanged("Children");
-        }  
-
-        public override void GoNext()
+            RaisePropertyChanged("Path");
+        } 
+        
+        private void AddPages(Book parent)
         {
-            base.GoNext();
-            this.Children = this.Next.Children;
-        }
-
-        public override void GoPrev()
-        {
-            base.GoPrev();
-            this.Children = this.Prev.Children;
-        }
-                 
+            var files = System.IO.Directory.GetFiles(parent.FolderPath, "*.jpg", System.IO.SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+            {
+                INode child = new Page(parent);
+                child.Path = file;
+                parent.Add(child, false);
+            }   
+        }                                                     
     }
                                 
 }

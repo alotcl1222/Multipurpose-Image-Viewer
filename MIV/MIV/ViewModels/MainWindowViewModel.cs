@@ -21,8 +21,7 @@ namespace MIV.ViewModels
         public void Initialize()
         {
         }
-
-
+             
         INode m_node;
         public INode Node
         {
@@ -33,6 +32,11 @@ namespace MIV.ViewModels
                     m_node = new Book(); //root 
                 }                      
                 return m_node;
+            }
+            set
+            {
+                m_node = value;
+                RaisePropertyChanged("Node");
             }
         }                    
 
@@ -53,6 +57,8 @@ namespace MIV.ViewModels
             }        
         }
 
+        public INode SelectedItem { get; set; }
+
         Livet.Commands.ViewModelCommand m_nextCommand;
         public ICommand NextCommand
         {
@@ -62,19 +68,57 @@ namespace MIV.ViewModels
                 {
                     m_nextCommand = new Livet.Commands.ViewModelCommand(() =>
                     {
-                        m_node.GoNext();
+                        if (this.Node.HasNext) this.Node = this.Node.Next;
                     });
                 }
                 return m_nextCommand;
             }
-
         }
 
+        Livet.Commands.ViewModelCommand m_prevCommand;
+        public ICommand PrevCommand
+        {
+            get
+            {
+                if (m_prevCommand == null)
+                {
+                    m_prevCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        if (this.Node.HasPrev) this.Node = this.Node.Prev;
+                    });
+                }
+                return m_prevCommand;
+            }
+        }
+
+        Livet.Commands.ViewModelCommand m_upCommand;
+        public ICommand UpCommand
+        {
+            get
+            {
+                if (m_upCommand == null)
+                {
+                    m_upCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        if (this.Node.Parent == null) return;
+                        this.Node = this.Node.Parent;
+                    });
+                }
+                return m_upCommand;
+            }
+        }
 
         public void FolderSelected(FolderSelectionMessage m)
-        {                                    
+        {
             if (!m_node.IsDir) return;
-            m_node.Add(new Book(m.Response)); 
+            m_node.Add(new Book(m.Response), true);
+        }  
+
+        public void Selected()
+        {
+            if (this.SelectedItem == null) return;
+            this.Node = this.SelectedItem;
+
         }
     }
       
@@ -112,9 +156,9 @@ namespace MIV.ViewModels
             m_node.Remove(node);
         }
 
-        public void Add(INode node)
+        public void Add(INode node, bool isDir)
         {
-            m_node.Add(node);
+            m_node.Add(node, isDir);
         }
 
         public string Path
@@ -148,17 +192,7 @@ namespace MIV.ViewModels
         public INode FindRoot()
         {
             return m_node.FindRoot();
-        }
-
-        public void GoNext()
-        {
-            m_node.GoNext();
-        }
-
-        public void GoPrev()
-        {
-            m_node.GoPrev();
-        }
+        }   
 
         public bool IsDir { get; set; }   
                   

@@ -32,7 +32,77 @@
 
     </i:Interaction.Triggers>
 
-    <Grid>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <GroupBox Header="操作" Style="{StaticResource baseStyle}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click" SourceName="buttonPrev" >
+                        <l:ConfirmationDialogInteractionMessageAction >
+                            <l:DirectInteractionMessage CallbackCommand="{Binding PrevCommand}">
+                                <l:ConfirmationMessage Button="OKCancel" 
+                                                    Caption="確認"
+                                                    Text="戻る？"
+                                                    Image="Information"/>
+                            </l:DirectInteractionMessage>
+                        </l:ConfirmationDialogInteractionMessageAction>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Click" SourceName="buttonNext" >
+                        <l:ConfirmationDialogInteractionMessageAction >
+                            <l:DirectInteractionMessage CallbackCommand="{Binding NextCommand}">
+                                <l:ConfirmationMessage Button="OKCancel" 
+                                                    Caption="確認"
+                                                    Text="次行く？"
+                                                    Image="Information"/>
+                            </l:DirectInteractionMessage>
+                        </l:ConfirmationDialogInteractionMessageAction>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Click" SourceName="buttonUp" >
+                        <l:ConfirmationDialogInteractionMessageAction >
+                            <l:DirectInteractionMessage CallbackCommand="{Binding UpCommand}">
+                                <l:ConfirmationMessage Button="OKCancel" 
+                                                    Caption="確認"
+                                                    Text="上行く？"
+                                                    Image="Information"/>
+                            </l:DirectInteractionMessage>
+                        </l:ConfirmationDialogInteractionMessageAction>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Click" SourceName="buttonAdd">
+                        <l:FolderBrowserDialogInteractionMessageAction>
+                            <l:DirectInteractionMessage CallbackMethodTarget="{Binding}" CallbackMethodName="FolderSelected">
+                                <l:FolderSelectionMessage Description="フォルダーの選択" DialogPreference="None"/>
+                            </l:DirectInteractionMessage>
+                        </l:FolderBrowserDialogInteractionMessageAction>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Name="buttonAdd" Content="Add Book" Style="{StaticResource baseStyle}"/>
+                    <Button Name="buttonPrev" Content="Prev" Style="{StaticResource baseStyle}"/>
+                    <Button Name="buttonNext" Content="Next" Style="{StaticResource baseStyle}"/>
+                    <Button Name="buttonUp" Content="Up" Style="{StaticResource baseStyle}"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        <!-- サムネイル用のスタイルを適用 -->
+        <ListBox DockPanel.Dock="Top"
+                 Style="{StaticResource listBoxThumbnailStyle}"
+                 IsSynchronizedWithCurrentItem="True"
+                 ItemsSource="{Binding Node.Children}"
+                 SelectedItem="{Binding SelectedItem}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <ei:CallMethodAction 
+                        TargetObject="{Binding Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, Path=DataContext}" 
+                        MethodName="Selected"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListBox>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                      Style="{StaticResource viewerStyle}">
+            <Image Source="{Binding Node.Children/Path}" Stretch="None"/>       
+        </ScrollViewer>
+    </DockPanel>
+
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition Height="*"/>
@@ -77,5 +147,5 @@
                     </i:EventTrigger>
             </i:Interaction.Triggers>
         </Menu>
-    </Grid>
+    </Grid>-->
 </Window>
