@@ -98,6 +98,11 @@ namespace MIV.Models
 
     public class Book : AbstractNode
     {
+        public Book()
+        {
+            this.Name = "root";
+        }
+
         ObservableSynchronizedCollection<INode> m_children;
         public override ObservableSynchronizedCollection<INode> Children
         {
