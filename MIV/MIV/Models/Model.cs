@@ -20,6 +20,7 @@ namespace MIV.Models
         INode Prev { get; set; }
         bool HasNext { get; }
         bool HasPrev { get; }
+        INode FindRoot();
     }
 
     public abstract class AbstractNode : NotificationObject, INode
@@ -90,10 +91,20 @@ namespace MIV.Models
         {
             get { return m_prev != default(INode); }
         }
+
+        public virtual INode FindRoot()
+        {
+            if (this.m_parent == null) return this;
+            return this.m_parent.FindRoot();
+        }
     }
 
     public class Page : AbstractNode
     {
+        public Page(INode node)
+        {
+            this.Parent = node; // 自信を格納するBook
+        }
     }
 
     public class Book : AbstractNode
