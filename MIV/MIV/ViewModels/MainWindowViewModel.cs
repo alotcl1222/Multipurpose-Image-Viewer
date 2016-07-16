@@ -17,147 +17,151 @@ using MIV.Models;
 namespace MIV.ViewModels
 {
     public class MainWindowViewModel : ViewModel
-    {
-        /* コマンド、プロパティの定義にはそれぞれ 
-         * 
-         *  lvcom   : ViewModelCommand
-         *  lvcomn  : ViewModelCommand(CanExecute無)
-         *  llcom   : ListenerCommand(パラメータ有のコマンド)
-         *  llcomn  : ListenerCommand(パラメータ有のコマンド・CanExecute無)
-         *  lprop   : 変更通知プロパティ(.NET4.5ではlpropn)
-         *  
-         * を使用してください。
-         * 
-         * Modelが十分にリッチであるならコマンドにこだわる必要はありません。
-         * View側のコードビハインドを使用しないMVVMパターンの実装を行う場合でも、ViewModelにメソッドを定義し、
-         * LivetCallMethodActionなどから直接メソッドを呼び出してください。
-         * 
-         * ViewModelのコマンドを呼び出せるLivetのすべてのビヘイビア・トリガー・アクションは
-         * 同様に直接ViewModelのメソッドを呼び出し可能です。
-         */
-
-        /* ViewModelからViewを操作したい場合は、View側のコードビハインド無で処理を行いたい場合は
-         * Messengerプロパティからメッセージ(各種InteractionMessage)を発信する事を検討してください。
-         */
-
-        /* Modelからの変更通知などの各種イベントを受け取る場合は、PropertyChangedEventListenerや
-         * CollectionChangedEventListenerを使うと便利です。各種ListenerはViewModelに定義されている
-         * CompositeDisposableプロパティ(LivetCompositeDisposable型)に格納しておく事でイベント解放を容易に行えます。
-         * 
-         * ReactiveExtensionsなどを併用する場合は、ReactiveExtensionsのCompositeDisposableを
-         * ViewModelのCompositeDisposableプロパティに格納しておくのを推奨します。
-         * 
-         * LivetのWindowテンプレートではViewのウィンドウが閉じる際にDataContextDisposeActionが動作するようになっており、
-         * ViewModelのDisposeが呼ばれCompositeDisposableプロパティに格納されたすべてのIDisposable型のインスタンスが解放されます。
-         * 
-         * ViewModelを使いまわしたい時などは、ViewからDataContextDisposeActionを取り除くか、発動のタイミングをずらす事で対応可能です。
-         */
-
-        /* UIDispatcherを操作する場合は、DispatcherHelperのメソッドを操作してください。
-         * UIDispatcher自体はApp.xaml.csでインスタンスを確保してあります。
-         * 
-         * LivetのViewModelではプロパティ変更通知(RaisePropertyChanged)やDispatcherCollectionを使ったコレクション変更通知は
-         * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
-         */
+    {      
         public void Initialize()
         {
         }
 
 
-        BookShelf m_bookShelf;
-        public BookShelf BookShelf
+        INode m_node;
+        public INode Node
         {
             get
             {
-                if (m_bookShelf == null)
+                if (m_node == null)
                 {
-                    m_bookShelf = new BookShelf();
-                }
-                return m_bookShelf;
+                    m_node = new Book(); //root 
+                }                      
+                return m_node;
             }
-        }
+        }                    
 
-        ReadOnlyDispatcherCollection<BookViewModel> m_books;
-        public ReadOnlyDispatcherCollection<BookViewModel> Books
+        ReadOnlyDispatcherCollection<NodeViewModel> m_children;
+        public ReadOnlyDispatcherCollection<NodeViewModel> Children
         {
             get
-            {
-                if (m_books == null)
+            {                   
+                if (m_children == null)
                 {
-                    m_books = ViewModelHelper.CreateReadOnlyDispatcherCollection(BookShelf.Books
-                        , m => new BookViewModel(m, this)
+                    m_children = ViewModelHelper.CreateReadOnlyDispatcherCollection(Node.Children
+                        , m => new NodeViewModel(m, this)
                         , DispatcherHelper.UIDispatcher
                         );
-                    CompositeDisposable.Add(m_books);
+                    CompositeDisposable.Add(m_children);
                 }
-                return m_books;
-            }
+                return m_children;
+            }        
         }
 
-        Livet.Commands.ViewModelCommand m_nextPageCommand;
-        public ICommand NextPageCommand
+        Livet.Commands.ViewModelCommand m_nextCommand;
+        public ICommand NextCommand
         {
             get
             {
-                if (m_nextPageCommand == null)
+                if (m_nextCommand == null)
                 {
-                    m_nextPageCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {                                                       
-                        var book = Books.FirstOrDefault(x => x.Name == BookShelf.CurrentBookName);
-                        if(book != null) book.NextPageCommand.Execute(null);
+                    m_nextCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        m_node.GoNext();
                     });
                 }
-                return m_nextPageCommand;
+                return m_nextCommand;
             }
 
+        }
+
+
+        public void FolderSelected(FolderSelectionMessage m)
+        {                                    
+            if (!m_node.IsDir) return;
+            m_node.Add(new Book(m.Response)); 
         }
     }
       
-    public class BookViewModel : Livet.ViewModel
+    public class NodeViewModel : Livet.ViewModel, INode
     {
-        Book m_book;
-        MainWindowViewModel m_bookShelf;
-                
-        public BookViewModel(Book book, MainWindowViewModel bookShelf)
+        INode m_node;
+        MainWindowViewModel m_parent;
+
+        public NodeViewModel(INode node, MainWindowViewModel parent)
         {
-            m_book = book;
-            m_bookShelf = bookShelf;
+            m_node = node;
+            m_parent = parent;
         }
 
-
-        public String Name
+        public string Name
         {
-            get { return m_book.Name; }
-            set { m_book.Name = value; }
+            get { return m_node.Name; }
+            set { m_node.Name = value; }
         }
 
-        public String Path
+        public INode Parent
         {
-            get { return m_book.Path; }
-            set { m_book.Path = value; }
+            get { return m_node.Parent; }
+            set { m_node.Parent = value; }
         }
 
-        public String CurrentPage
+        public ObservableSynchronizedCollection<INode> Children
         {
-            get { return m_book.CurrentPage; }
-            set { m_book.CurrentPage = value; }
+            get { return m_node.Children; }
+            set { m_node.Children = value; }
         }
 
-        Livet.Commands.ViewModelCommand m_nextPageCommand;
-        public ICommand NextPageCommand
+        public void Remove(INode node)
         {
-            get
-            {
-                if (m_nextPageCommand == null)
-                {
-                    m_nextPageCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {
-                        m_book.NextPage();                   
-                    });
-                }
-                return m_nextPageCommand;
-            }
+            m_node.Remove(node);
         }
+
+        public void Add(INode node)
+        {
+            m_node.Add(node);
+        }
+
+        public string Path
+        {
+            get { return m_node.Path; }
+            set { m_node.Path = value; }
+        }
+
+        public INode Next
+        {
+            get { return m_node.Next; }
+            set { m_node.Next = value; }
+        }
+
+        public INode Prev
+        {
+            get { return m_node.Prev; }
+            set { m_node.Prev = value; }
+        }
+
+        public bool HasNext
+        {
+            get { return m_node.Next != default(INode); }
+        }
+
+        public bool HasPrev
+        {
+            get { return m_node.Prev != default(INode); }
+        }                              
+
+        public INode FindRoot()
+        {
+            return m_node.FindRoot();
+        }
+
+        public void GoNext()
+        {
+            m_node.GoNext();
+        }
+
+        public void GoPrev()
+        {
+            m_node.GoPrev();
+        }
+
+        public bool IsDir { get; set; }
+                  
     }   
 
                 

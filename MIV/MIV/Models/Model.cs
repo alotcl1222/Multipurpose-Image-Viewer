@@ -12,7 +12,7 @@ namespace MIV.Models
         // 本(=本棚)、ページのインターフェイス
         string Name { get; set; }
         INode Parent { get; set; }
-        ObservableSynchronizedCollection<INode> Children { get; }
+        ObservableSynchronizedCollection<INode> Children { get; set; }
         void Remove(INode node);
         void Add(INode node);
         string Path { get; set; }
@@ -20,7 +20,10 @@ namespace MIV.Models
         INode Prev { get; set; }
         bool HasNext { get; }
         bool HasPrev { get; }
+        void GoNext();
+        void GoPrev();
         INode FindRoot();
+        bool IsDir { get; set; }
     }
 
     public abstract class AbstractNode : NotificationObject, INode
@@ -51,7 +54,8 @@ namespace MIV.Models
 
         public virtual ObservableSynchronizedCollection<INode> Children
         {
-            get { throw new InvalidOperationException(); }
+            get { return null; }
+            set { throw new InvalidOperationException(); }
         }
 
         public virtual void Remove(INode node)
@@ -92,32 +96,56 @@ namespace MIV.Models
             get { return m_prev != default(INode); }
         }
 
+        public virtual void GoNext()
+        {
+            if (!this.HasNext) throw new InvalidOperationException();
+            this.Name = this.Next.Name;
+            this.Next = this.Next.Next;
+            this.Path = this.Next.Path;
+            this.Prev = this.Next.Prev;
+        }
+
+        public virtual void GoPrev()
+        {
+            if (!this.HasPrev) throw new InvalidOperationException();
+            this.Name = this.Prev.Name;
+            this.Next = this.Prev.Next;
+            this.Path = this.Prev.Path;
+            this.Prev = this.Prev.Prev;
+        }
+
         public virtual INode FindRoot()
         {
             if (this.m_parent == null) return this;
             return this.m_parent.FindRoot();
         }
+
+        public bool IsDir { get; set; }
     }
 
     public class Page : AbstractNode
     {
         public Page(INode node)
         {
-            this.Parent = node; // 自信を格納するBook
+            this.Parent = node; // 自身を格納するBook
+            this.IsDir = false;
         }
     }
 
     public class Book : AbstractNode
     {
-        public Book()
+        public Book(string path="")
         {
             this.Name = "root";
+            this.IsDir = true;
+            this.Path = path;
         }
 
         ObservableSynchronizedCollection<INode> m_children;
         public override ObservableSynchronizedCollection<INode> Children
         {
-            get { return m_children; }
+            get { return m_children; } 
+            set { m_children = value; }
         }
 
         public override void Remove(INode node)
@@ -127,8 +155,26 @@ namespace MIV.Models
 
         public override void Add(INode node)
         {
+            if (m_children == null)
+            {
+                m_children = new ObservableSynchronizedCollection<INode> { };
+            }
+            node.Parent = this;
             m_children.Add(node);
+        }  
+
+        public override void GoNext()
+        {
+            base.GoNext();
+            this.Children = this.Next.Children;
         }
+
+        public override void GoPrev()
+        {
+            base.GoPrev();
+            this.Children = this.Prev.Children;
+        }
+                 
     }
                                 
 }
