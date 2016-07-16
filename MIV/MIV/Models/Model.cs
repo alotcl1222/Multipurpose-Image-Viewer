@@ -6,12 +6,25 @@ using System.Text;
 using Livet;
 
 namespace MIV.Models
-{                   
-    public class Book : NotificationObject
+{
+    public interface INode
     {
-        BookShelf m_bookShelf;
+        // 本(=本棚)、ページのインターフェイス
+        string Name { get; set; }
+        INode Parent { get; set; }
+        ObservableSynchronizedCollection<INode> Children { get; }
+        void Remove(INode node);
+        void Add(INode node);
+        string Path { get; set; }
+        INode Next { get; set; }
+        INode Prev { get; set; }
+        bool HasNext { get; }
+        bool HasPrev { get; }
+    }
 
-        String m_name;
+    public abstract class AbstractNode : NotificationObject, INode
+    {
+        string m_name;
         public String Name
         {
             get { return m_name; }
@@ -23,7 +36,34 @@ namespace MIV.Models
             }
         }
 
-        String m_path;
+        INode m_parent;
+        public INode Parent
+        {
+            get { return m_parent; }
+            set
+            {
+                if (m_parent == value) return;
+                m_parent = value;
+                RaisePropertyChanged("Parent");
+            }
+        }
+
+        public virtual ObservableSynchronizedCollection<INode> Children
+        {
+            get { throw new InvalidOperationException(); }
+        }
+
+        public virtual void Remove(INode node)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual void Add(INode node)
+        {
+            throw new InvalidOperationException();
+        }
+
+        string m_path;
         public String Path
         {
             get { return m_path; }
@@ -35,75 +75,44 @@ namespace MIV.Models
             }
         }
 
-        String m_currentPage;
-        public String CurrentPage
+        INode m_next;
+        public INode Next { get; set; }
+
+        INode m_prev;
+        public INode Prev { get; set; }
+
+        public virtual bool HasNext
         {
-            get { return m_currentPage; }
-            set
-            {
-                if (m_currentPage == value) return;
-                m_currentPage = value;
-                RaisePropertyChanged("CurrentPage");
-            }
+            get { return m_next != default(INode); }
         }
 
-        public Book(BookShelf bookShelf)
+        public virtual bool HasPrev
         {
-            m_bookShelf = bookShelf;
-        }
-
-        public void NextPage()
-        {
-            string str = this.CurrentPage;
-            this.CurrentPage = str.Replace("0001", "0002");
-            Console.Write(str.Replace("0001", "0002")); 
-        }
-
-        public bool IsIncludedInMainCollection()
-        {
-            return m_bookShelf.Books.Contains(this);
-        }
-
-        public void AddThisToMainCollection()
-        {
-            m_bookShelf.Books.Add(this);
-        }
-
-        public void RemoveThisFromMainCollection()
-        {
-            m_bookShelf.Books.Remove(this);
+            get { return m_prev != default(INode); }
         }
     }
 
-    public class BookShelf : Livet.NotificationObject
+    public class Page : AbstractNode
     {
-        ObservableSynchronizedCollection<Book> m_books;
-        public ObservableSynchronizedCollection<Book> Books
+    }
+
+    public class Book : AbstractNode
+    {
+        ObservableSynchronizedCollection<INode> m_children;
+        public override ObservableSynchronizedCollection<INode> Children
         {
-            get
-            {
-                if(m_books == null)
-                {
-                    m_books = new ObservableSynchronizedCollection<Book>
-                    {
-                        new Book(this) {Name = "hoge", Path="./", CurrentPage=System.Environment.CurrentDirectory+@"\media\0001.jpg" } 
-                    };
-                    this.CurrentBookName = "hoge";
-                }
-                return m_books;
-            }
+            get { return m_children; }
         }
 
-        String m_currentBookName;
-        public String CurrentBookName
+        public override void Remove(INode node)
         {
-            get { return m_currentBookName; }
-            set
-            {
-                if (m_currentBookName == value) return;
-                m_currentBookName = value;
-                RaisePropertyChanged("CurrentBookName");
-            }
+            m_children.Remove(node);
+        }
+
+        public override void Add(INode node)
+        {
+            m_children.Add(node);
         }
     }
+                                
 }
