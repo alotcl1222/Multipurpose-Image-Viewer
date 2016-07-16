@@ -151,6 +151,7 @@ namespace MIV.Models
         public override void Remove(INode node)
         {
             m_children.Remove(node);
+            RaisePropertyChanged("Children");
         }
 
         public override void Add(INode node)
@@ -161,6 +162,7 @@ namespace MIV.Models
             }
             node.Parent = this;
             m_children.Add(node);
+            RaisePropertyChanged("Children");
         }  
 
         public override void GoNext()

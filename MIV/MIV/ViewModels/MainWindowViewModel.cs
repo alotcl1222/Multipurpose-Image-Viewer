@@ -160,7 +160,7 @@ namespace MIV.ViewModels
             m_node.GoPrev();
         }
 
-        public bool IsDir { get; set; }
+        public bool IsDir { get; set; }   
                   
     }   
 
