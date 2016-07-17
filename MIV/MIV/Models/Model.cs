@@ -159,7 +159,7 @@ namespace MIV.Models
                 pages.Add(child);
             }    
 
-            foreach( var page in pages)
+            foreach(var page in pages)
             {                            
                 parent.Add(page, false);
             }                                        

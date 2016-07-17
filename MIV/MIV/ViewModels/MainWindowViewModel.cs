@@ -74,6 +74,7 @@ namespace MIV.ViewModels
 
         public void GoNext()
         {
+            if (this.SelectedItem == null) return;
             if (this.SelectedItem.Next == null) return;
             this.SelectedItem = this.SelectedItem.Next;
             RaisePropertyChanged("SelectedItem");
@@ -81,6 +82,7 @@ namespace MIV.ViewModels
 
         public void GoPrev()
         {
+            if (this.SelectedItem == null) return;
             if (this.SelectedItem.Prev == null) return;
             this.SelectedItem = this.SelectedItem.Prev;
             RaisePropertyChanged("SelectedItem");
@@ -89,6 +91,7 @@ namespace MIV.ViewModels
         public void Selected()
         {
             if (this.SelectedItem == null) return;
+            if (!this.SelectedItem.IsDir) return;
             this.Node = this.SelectedItem;
 
         }
