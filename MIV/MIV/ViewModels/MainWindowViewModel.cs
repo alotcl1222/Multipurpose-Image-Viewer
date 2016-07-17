@@ -59,60 +59,32 @@ namespace MIV.ViewModels
 
         public INode SelectedItem { get; set; }
 
-        Livet.Commands.ViewModelCommand m_nextCommand;
-        public ICommand NextCommand
-        {
-            get
-            {
-                if (m_nextCommand == null)
-                {
-                    m_nextCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {
-                        if (this.Node.HasNext) this.Node = this.Node.Next;
-                    });
-                }
-                return m_nextCommand;
-            }
-        }
-
-        Livet.Commands.ViewModelCommand m_prevCommand;
-        public ICommand PrevCommand
-        {
-            get
-            {
-                if (m_prevCommand == null)
-                {
-                    m_prevCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {
-                        if (this.Node.HasPrev) this.Node = this.Node.Prev;
-                    });
-                }
-                return m_prevCommand;
-            }
-        }
-
-        Livet.Commands.ViewModelCommand m_upCommand;
-        public ICommand UpCommand
-        {
-            get
-            {
-                if (m_upCommand == null)
-                {
-                    m_upCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {
-                        if (this.Node.Parent == null) return;
-                        this.Node = this.Node.Parent;
-                    });
-                }
-                return m_upCommand;
-            }
-        }
-
         public void FolderSelected(FolderSelectionMessage m)
         {
             if (!m_node.IsDir) return;
-            m_node.Add(new Book(m.Response), true);
-        }  
+            if (m.Response == null) return;
+            m_node.Add(new Book(m.Response), true);  // これをVMでやるのおかしくない?
+        }
+
+        public void GoUp()
+        {
+            if (this.Node.Parent == null) return;
+            this.Node = this.Node.Parent;
+        }
+
+        public void GoNext()
+        {
+            if (this.SelectedItem.Next == null) return;
+            this.SelectedItem = this.SelectedItem.Next;
+            RaisePropertyChanged("SelectedItem");
+        }
+
+        public void GoPrev()
+        {
+            if (this.SelectedItem.Prev == null) return;
+            this.SelectedItem = this.SelectedItem.Prev;
+            RaisePropertyChanged("SelectedItem");
+        }
 
         public void Selected()
         {
@@ -177,17 +149,7 @@ namespace MIV.ViewModels
         {
             get { return m_node.Prev; }
             set { m_node.Prev = value; }
-        }
-
-        public bool HasNext
-        {
-            get { return m_node.Next != default(INode); }
-        }
-
-        public bool HasPrev
-        {
-            get { return m_node.Prev != default(INode); }
-        }                              
+        }      
 
         public INode FindRoot()
         {

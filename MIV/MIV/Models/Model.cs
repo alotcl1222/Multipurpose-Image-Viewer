@@ -17,9 +17,7 @@ namespace MIV.Models
         void Add(INode node, bool isDir);
         string Path { get; set; }
         INode Next { get; set; }
-        INode Prev { get; set; }
-        bool HasNext { get; }
-        bool HasPrev { get; }    
+        INode Prev { get; set; }   
         INode FindRoot();
         bool IsDir { get; set; }
     }
@@ -82,17 +80,7 @@ namespace MIV.Models
         public INode Next { get; set; }
 
         INode m_prev;
-        public INode Prev { get; set; }
-
-        public virtual bool HasNext
-        {
-            get { return m_next != default(INode); }
-        }
-
-        public virtual bool HasPrev
-        {
-            get { return m_prev != default(INode); }
-        }            
+        public INode Prev { get; set; }      
                                            
         public virtual INode FindRoot()
         {
@@ -141,7 +129,7 @@ namespace MIV.Models
             if (m_children == null)
             {
                 m_children = new ObservableSynchronizedCollection<INode> { };
-            }
+            }       
             node.Parent = this; 
             m_children.Add(node);
 
@@ -158,13 +146,24 @@ namespace MIV.Models
         private void AddPages(Book parent)
         {
             var files = System.IO.Directory.GetFiles(parent.FolderPath, "*.jpg", System.IO.SearchOption.TopDirectoryOnly);
+            var pages = new List<INode> { };
             foreach (var file in files)
             {
                 INode child = new Page(parent);
                 child.Path = file;
-                parent.Add(child, false);
-            }   
-        }                                                     
+                if (pages.Any())
+                {
+                    child.Prev = pages.Last();
+                    pages.Last().Next = child; 
+                }
+                pages.Add(child);
+            }    
+
+            foreach( var page in pages)
+            {                            
+                parent.Add(page, false);
+            }                                        
+        }                                               
     }
                                 
 }
