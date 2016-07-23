@@ -28,7 +28,7 @@ namespace MultipurposeImageViewer
             ContentRendered += (s, e) => { openDefaultFile(); };    //起動時にファイルを読み込む
             
         }
-
+        int a = 0;
         // メニュー - 開く
         //とりあえずデグレード
         /*
