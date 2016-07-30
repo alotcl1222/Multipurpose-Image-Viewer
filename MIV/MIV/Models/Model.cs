@@ -16,34 +16,34 @@ namespace MIV.Models
         void Remove(INode node);
         void Add(INode node, bool isDir);
         string Path { get; set; }
-        INode Next { get; set; }
-        INode Prev { get; set; }   
+        INode Next { get; }
+        INode Prev { get; }   
         INode FindRoot();
         bool IsDir { get; set; }
     }
 
     public abstract class AbstractNode : NotificationObject, INode
     {
-        string m_name;
+        string name;
         public String Name
         {
-            get { return m_name; }
+            get { return this.name; }
             set
             {
-                if (m_name == value) return;
-                m_name = value;
+                if (this.name == value) return;
+                this.name = value;
                 RaisePropertyChanged("Name");
             }
         }
 
-        INode m_parent;
+        INode parent;
         public INode Parent
         {
-            get { return m_parent; }
+            get { return this.parent; }
             set
             {
-                if (m_parent == value) return;
-                m_parent = value;
+                if (this.parent == value) return;
+                parent = value;
                 RaisePropertyChanged("Parent");
             }
         }
@@ -64,28 +64,45 @@ namespace MIV.Models
             throw new InvalidOperationException();
         }
 
-        string m_path;
+        string path;
         public String Path
         {
-            get { return m_path; }
+            get { return this.path; }
             set
             {
-                if (m_path == value) return;
-                m_path = value;
+                if (this.path == value) return;
+                this.path = value;
                 RaisePropertyChanged("Path");
             }
         }
 
-        INode m_next;
-        public INode Next { get; set; }
+        INode next;
+        public INode Next
+        {
+            get
+            {
+                var idx = this.parent.Children.IndexOf(this);
+                if (idx == this.parent.Children.Count - 1) return this;
+                return this.parent.Children[idx + 1 ];
+            }
 
-        INode m_prev;
-        public INode Prev { get; set; }      
+        }
+
+        INode prev;
+        public INode Prev
+        {
+            get
+            {          
+                var idx = this.parent.Children.IndexOf(this);
+                if (idx == 0) return this;
+                return this.parent.Children[idx - 1];
+            }
+        }      
                                            
         public virtual INode FindRoot()
         {
-            if (this.m_parent == null) return this;
-            return this.m_parent.FindRoot();
+            if (this.parent == null) return this;
+            return this.parent.FindRoot();
         }
 
         public bool IsDir { get; set; }
@@ -111,27 +128,27 @@ namespace MIV.Models
             this.FolderPath = path;
         }
 
-        ObservableSynchronizedCollection<INode> m_children;
+        ObservableSynchronizedCollection<INode> children;
         public override ObservableSynchronizedCollection<INode> Children
         {
-            get { return m_children; } 
-            set { m_children = value; }
+            get { return this.children; } 
+            set { this.children = value; }
         }
 
         public override void Remove(INode node)
         {
-            m_children.Remove(node);
+            this.children.Remove(node);
             RaisePropertyChanged("Children");
         }
 
         public override void Add(INode node, bool isDir)
         {
-            if (m_children == null)
+            if (this.children == null)
             {
-                m_children = new ObservableSynchronizedCollection<INode> { };
+                this.children = new ObservableSynchronizedCollection<INode> { };
             }       
             node.Parent = this; 
-            m_children.Add(node);
+            this.children.Add(node);
 
             if (isDir)
             {
@@ -150,20 +167,10 @@ namespace MIV.Models
             foreach (var file in files)
             {
                 INode child = new Page(parent);
-                child.Path = file;
-                if (pages.Any())
-                {
-                    child.Prev = pages.Last();
-                    pages.Last().Next = child; 
-                }
-                pages.Add(child);
-            }    
-
-            foreach(var page in pages)
-            {                            
-                parent.Add(page, false);
-            }                                        
-        }                                               
+                child.Path = file;       
+                parent.Add(child, false);
+            }                              
+        }                                             
     }
                                 
 }

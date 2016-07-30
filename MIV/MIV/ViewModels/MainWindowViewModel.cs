@@ -22,38 +22,38 @@ namespace MIV.ViewModels
         {
         }
              
-        INode m_node;
+        INode node;
         public INode Node
         {
             get
             {
-                if (m_node == null)
+                if (this.node == null)
                 {
-                    m_node = new Book(); //root 
+                    this.node = new Book(); //root 
                 }                      
-                return m_node;
+                return this.node;
             }
             set
             {
-                m_node = value;
+                this.node = value;
                 RaisePropertyChanged("Node");
             }
         }                    
 
-        ReadOnlyDispatcherCollection<NodeViewModel> m_children;
+        ReadOnlyDispatcherCollection<NodeViewModel> children;
         public ReadOnlyDispatcherCollection<NodeViewModel> Children
         {
             get
             {                   
-                if (m_children == null)
+                if (this.children == null)
                 {
-                    m_children = ViewModelHelper.CreateReadOnlyDispatcherCollection(Node.Children
+                    this.children = ViewModelHelper.CreateReadOnlyDispatcherCollection(Node.Children
                         , m => new NodeViewModel(m, this)
                         , DispatcherHelper.UIDispatcher
                         );
-                    CompositeDisposable.Add(m_children);
+                    CompositeDisposable.Add(this.children);
                 }
-                return m_children;
+                return children;
             }        
         }
 
@@ -61,9 +61,9 @@ namespace MIV.ViewModels
 
         public void FolderSelected(FolderSelectionMessage m)
         {
-            if (!m_node.IsDir) return;
+            if (!this.node.IsDir) return;
             if (m.Response == null) return;
-            m_node.Add(new Book(m.Response), true);  // これをVMでやるのおかしくない?
+            this.node.Add(new Book(m.Response), true);  // これをVMでやるのおかしくない?
         }
 
         public void GoUp()
@@ -99,64 +99,62 @@ namespace MIV.ViewModels
       
     public class NodeViewModel : Livet.ViewModel, INode
     {
-        INode m_node;
-        MainWindowViewModel m_parent;
+        INode node;
+        MainWindowViewModel parent;
 
         public NodeViewModel(INode node, MainWindowViewModel parent)
         {
-            m_node = node;
-            m_parent = parent;
+            this.node = node;
+            this.parent = parent;
         }
 
         public string Name
         {
-            get { return m_node.Name; }
-            set { m_node.Name = value; }
+            get { return this.node.Name; }
+            set { this.node.Name = value; }
         }
 
         public INode Parent
         {
-            get { return m_node.Parent; }
-            set { m_node.Parent = value; }
+            get { return this.node.Parent; }
+            set { this.node.Parent = value; }
         }
 
         public ObservableSynchronizedCollection<INode> Children
         {
-            get { return m_node.Children; }
-            set { m_node.Children = value; }
+            get { return this.node.Children; }
+            set { this.node.Children = value; }
         }
 
         public void Remove(INode node)
         {
-            m_node.Remove(node);
+            this.node.Remove(node);
         }
 
         public void Add(INode node, bool isDir)
         {
-            m_node.Add(node, isDir);
+            this.node.Add(node, isDir);
         }
 
         public string Path
         {
-            get { return m_node.Path; }
-            set { m_node.Path = value; }
+            get { return this.node.Path; }
+            set { this.node.Path = value; }
         }
 
         public INode Next
         {
-            get { return m_node.Next; }
-            set { m_node.Next = value; }
+            get { return this.node.Next; }      
         }
 
         public INode Prev
         {
-            get { return m_node.Prev; }
-            set { m_node.Prev = value; }
+            get { return this.node.Prev; }    
         }      
 
         public INode FindRoot()
         {
-            return m_node.FindRoot();
+            return this.node.FindRoot();
         }   
 
         public bool IsDir { get; set; }   
