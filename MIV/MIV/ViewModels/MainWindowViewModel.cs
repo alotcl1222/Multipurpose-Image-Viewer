@@ -83,7 +83,7 @@ namespace MIV.ViewModels
         public void GoPrev()
         {
             if (this.SelectedItem == null) return;
-            if (this.SelectedItem.Prev == null) return;
+            if (this.SelectedItem.Prev == null) return;                 
             this.SelectedItem = this.SelectedItem.Prev;
             RaisePropertyChanged("SelectedItem");
         }
@@ -92,8 +92,7 @@ namespace MIV.ViewModels
         {
             if (this.SelectedItem == null) return;
             if (!this.SelectedItem.IsDir) return;
-            this.Node = this.SelectedItem;
-
+            this.Node = this.SelectedItem;     
         }
     }
       
@@ -144,12 +143,22 @@ namespace MIV.ViewModels
 
         public INode Next
         {
-            get { return this.node.Next; }      
+            get
+            {
+                this.node.Close();
+                this.node.Next.Open();
+                return this.node.Next;
+            }      
         }
 
         public INode Prev
         {
-            get { return this.node.Prev; }    
+            get
+            {
+                this.node.Close();
+                this.node.Prev.Open();
+                return this.node.Prev;
+            }    
         }      
 
         public INode FindRoot()
@@ -157,9 +166,25 @@ namespace MIV.ViewModels
             return this.node.FindRoot();
         }   
 
-        public bool IsDir { get; set; }   
-                  
-    }   
+        public bool IsDir { get; set; }
 
-                
+        public DateTime LastAccessed { get; }
+        public List<TimeSpan> StayTimes { get; }
+        public TimeSpan CurrentStayTime { get; }
+        public TimeSpan EstimatedStayTime { get; }
+
+        #region 実装しなきゃいけないから実装してるけど呼ばれることは想定してない
+        public void Open()
+        {
+            this.node.Open();
+        }
+
+        public void Close()
+        {
+            this.node.Close();
+        }
+        #endregion
+    }
+
+
 }

@@ -20,6 +20,12 @@ namespace MIV.Models
         INode Prev { get; }   
         INode FindRoot();
         bool IsDir { get; set; }
+        DateTime LastAccessed { get; }
+        List<TimeSpan> StayTimes { get; }
+        TimeSpan CurrentStayTime { get; }
+        TimeSpan EstimatedStayTime { get; }
+        void Open();
+        void Close();
     }
 
     public abstract class AbstractNode : NotificationObject, INode
@@ -106,6 +112,24 @@ namespace MIV.Models
         }
 
         public bool IsDir { get; set; }
+
+                               
+        public DateTime LastAccessed { get; private set; }
+        public List<TimeSpan> StayTimes { get; private set; }
+        public TimeSpan CurrentStayTime { get; private set; }
+        public TimeSpan EstimatedStayTime { get; private set; }
+
+        public void Open()
+        {
+            // Todo : 表示画像として選択された時の処理を実装ください     
+            throw new NotImplementedException();
+        }
+
+        public void Close()
+        {
+            // Todo : 表示画像として選択されなくなった時の処理を実装ください
+            throw new NotImplementedException();
+        }
     }
 
     public class Page : AbstractNode
