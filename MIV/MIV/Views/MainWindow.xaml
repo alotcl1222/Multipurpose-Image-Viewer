@@ -41,7 +41,7 @@
                             <i:EventTrigger EventName="Click" SourceName="buttonAdd">
                                 <l:FolderBrowserDialogInteractionMessageAction>
                                     <l:DirectInteractionMessage CallbackMethodTarget="{Binding}" CallbackMethodName="FolderSelected">
-                                        <l:FolderSelectionMessage Description="フォルダーの選択" DialogPreference="None"/>
+                                        <l:FolderSelectionMessage/>
                                     </l:DirectInteractionMessage>
                                 </l:FolderBrowserDialogInteractionMessageAction>
                             </i:EventTrigger>
