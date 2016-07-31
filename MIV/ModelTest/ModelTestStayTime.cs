@@ -24,16 +24,16 @@ namespace ModelTestStayTime
         }
 
         [TestMethod]
-        public void アクセスのたびにアクセス日時が更新されているか()
+        public void 開いた時に最終アクセス日時が更新されるか()
         {
             #region テスト準備
             var root = new Book();
-            var book = new Book();                                             
+            var book = new Book();
             book.FolderPath = System.Environment.CurrentDirectory + @"\media\";
             root.Add(book, true);
             #endregion
             // 以降の1ページめへのアクセスがめんどいのでtargetという名前で呼ぶ
-            var target = book.Children[0]; 
+            var target = book.Children[0];
             //ページを開いて、アクセス時刻を取得
             target.Open();
             var time1 = target.LastAccessed;
@@ -45,7 +45,32 @@ namespace ModelTestStayTime
             // 0秒間を表す変数
             var zero = new TimeSpan(0);
 
-            // アクセスのたびにアクセス日時が更新されているか(0秒以上経過しているか)テスト。
+            // 開いた時に最終アクセス日時が更新されるか(0秒以上経過しているか)テスト。
+            Assert.IsTrue(target.LastAccessed - time1 > zero);
+        }
+
+        [TestMethod]
+        public void 閉じた時に最終アクセス日時が更新されるか()
+        {
+            #region テスト準備
+            var root = new Book();
+            var book = new Book();
+            book.FolderPath = System.Environment.CurrentDirectory + @"\media\";
+            root.Add(book, true);
+            #endregion
+            // 以降の1ページめへのアクセスがめんどいのでtargetという名前で呼ぶ
+            var target = book.Children[0];
+            //ページを開いて、アクセス時刻を取得
+            target.Open();
+            var time1 = target.LastAccessed;
+            //ちょっと待つ
+            System.Threading.Thread.Sleep(10);
+            //閉じる
+            target.Close();   
+            // 0秒間を表す変数
+            var zero = new TimeSpan(0);
+
+            // 閉じた時に最終アクセス日時が更新されるか(0秒以上経過しているか)テスト。
             Assert.IsTrue(target.LastAccessed - time1 > zero);
         }
     }
