@@ -20,6 +20,9 @@ namespace MIV.ViewModels
     {      
         public void Initialize()
         {
+            // 起動時にログイン画面を表示
+            Messenger.Raise(new Livet.Messaging.TransitionMessage(
+                new LoginWindowViewModel(), "Transition"));
         }
              
         INode node;
@@ -94,6 +97,23 @@ namespace MIV.ViewModels
             if (!this.SelectedItem.IsDir) return;
             this.Node = this.SelectedItem;
 
+        }
+
+        Livet.Commands.ViewModelCommand loginCommand;
+        public ICommand LoginCommand
+        {
+            get
+            {
+                if (loginCommand == null)
+                {
+                    loginCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        Messenger.Raise(new Livet.Messaging.TransitionMessage(
+                            new LoginWindowViewModel(), "Transition"));
+                    });
+                }
+                return loginCommand;
+            }
         }
     }
       

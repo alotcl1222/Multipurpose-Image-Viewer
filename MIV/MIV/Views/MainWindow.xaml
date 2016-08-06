@@ -5,7 +5,8 @@
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:MIV.Views"
-        xmlns:vm="clr-namespace:MIV.ViewModels"
+        xmlns:vm="clr-namespace:MIV.ViewModels"     
+        xmlns:local="clr-namespace:MIV.Views"
         Title="MainWindow" Height="720" Width="1280">
 
     <Window.DataContext>
@@ -29,7 +30,12 @@
         </i:EventTrigger>
 
         <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
-
+        
+        <!--ViewからのTransitionというメッセージキーを持つメッセージを受信します-->
+        <!--TransitionInteractionMessageAction で画面遷移を行っています-->
+        <l:InteractionMessageTrigger MessageKey="Transition" Messenger="{Binding Messenger}">
+            <l:TransitionInteractionMessageAction WindowType="{x:Type local:LoginWindow}" Mode="Modal"/>
+        </l:InteractionMessageTrigger>
     </i:Interaction.Triggers>
 
     <DockPanel>
@@ -68,6 +74,7 @@
                             </i:EventTrigger>
                          </i:Interaction.Triggers>
                     </Button>
+                    <Button Command="{Binding LoginCommand}" Style="{StaticResource baseStyle}">Login</Button>
                 </StackPanel>
             </GroupBox>
         </StackPanel>
