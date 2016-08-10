@@ -30,6 +30,7 @@ namespace MIV.ViewModels
                 if (user.Id == value) return;
                 user.Id = value;
                 this.IdErrComment = user.IDErrComment();
+                this.ErrComment = string.Empty;
                 RaisePropertyChanged("ID");  
             }
         }
@@ -43,10 +44,22 @@ namespace MIV.ViewModels
                 if (user.Psw == value) return;
                 user.Psw = value;
                 this.PswErrComment = user.PswErrComment();
-                RaisePropertyChanged("Psw");    
+                this.ErrComment = string.Empty;
+                RaisePropertyChanged("Psw");
             }
-        }          
-               
+        }
+        private string errComment;
+        public string ErrComment
+        {
+            get { return this.errComment ?? string.Empty; }
+            set
+            {
+                if (this.errComment == value) return;
+                this.errComment = value;                
+                RaisePropertyChanged("ErrComment");
+            }
+        }
+
         public void Initialize()
         {
         }
@@ -85,13 +98,18 @@ namespace MIV.ViewModels
                 if (doLoginCommand == null)
                 {
                     doLoginCommand = new Livet.Commands.ViewModelCommand(() =>
-                    {             
-                        Messenger.Raise(new WindowActionMessage(Livet.Messaging.Windows.WindowAction.Close, "Close"));
+                    {
+                        if (!user.Login())
+                        {
+                            this.ErrComment = @"は？";
+                        }
+                        else
+                        {
+                            Messenger.Raise(new WindowActionMessage(Livet.Messaging.Windows.WindowAction.Close, "Close"));
+                        }
                     });
-                }
-
-                if (!user.Login()) return null;
-                return doLoginCommand;
+                }                                         
+                return doLoginCommand;      
             }
         }
 

@@ -112,9 +112,9 @@ namespace MIV.ViewModels
                             new LoginWindowViewModel(), "Transition"));
                     });
                 }
-                return loginCommand;
+                return loginCommand;                  
             }
-        }
+        }               
     }
       
     public class NodeViewModel : Livet.ViewModel, INode

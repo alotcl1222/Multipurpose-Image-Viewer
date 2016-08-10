@@ -7,6 +7,7 @@
         xmlns:v="clr-namespace:MIV.Views"
         xmlns:vm="clr-namespace:MIV.ViewModels"     
         xmlns:local="clr-namespace:MIV.Views"
+        xmlns:properties="clr-namespace:MIV.Properties"
         Title="MainWindow" Height="720" Width="1280">
 
     <Window.DataContext>
@@ -77,6 +78,7 @@
                     <Button Command="{Binding LoginCommand}" Style="{StaticResource baseStyle}">Login</Button>
                 </StackPanel>
             </GroupBox>
+            <Label Content="{Binding Source={x:Static properties:Settings.Default}, Path=currentUserID, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </StackPanel>
         <!-- サムネイル用のスタイルを適用 -->
         <ListBox DockPanel.Dock="Top"

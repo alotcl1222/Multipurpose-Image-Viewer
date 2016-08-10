@@ -92,12 +92,12 @@ namespace MIV.Models
         /// ログインに成功したかどうか
         /// </returns>
         public bool Login()
-        {                      
+        {                           
             // 正しいID&pswの組み合わせでないのにログインを試行した場合false
             if (!this.IsValidPair()) return false;
 
             // 設定ファイルにログインするユーザー名を書いておく
-            Properties.Settings.Default.currentUserID = this.id;
+            Properties.Settings.Default.currentUserID = this.Id;
             Properties.Settings.Default.Save();
             return true;
         }

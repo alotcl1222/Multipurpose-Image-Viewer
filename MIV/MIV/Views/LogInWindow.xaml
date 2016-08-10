@@ -53,6 +53,7 @@
 
         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >ID：</TextBlock>
         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >Password：</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ErrComment}"/>
 
         <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding InputID, UpdateSourceTrigger=PropertyChanged}" >
             <TextBox.ToolTip>
