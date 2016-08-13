@@ -174,7 +174,7 @@ namespace MIV.Models
             this.DB.CreateTable<UserEntity>();
             if(Select<UserEntity>(@"mh0817") == null)
             {
-                Insert(new UserEntity(@"mh0817", SafePassword.GetStretchedPassword(@"mh0817", @"0817")));    
+                Insert(new UserEntity(@"mh0817", SafePassword.GetStretchedPassword(@"mh0817", @"1234")));    
             }        
         }    
     }
