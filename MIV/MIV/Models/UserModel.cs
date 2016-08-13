@@ -155,10 +155,16 @@ namespace MIV.Models
 
     #region DB関連
     public class UserEntity
-    {
-        [SQLite.PrimaryKey, SQLite.Indexed]
+    {                                           
         public string Id { get; set; }
         public string Psw { get; set; }
+
+        public UserEntity() { }
+        public UserEntity(string id, string psw)
+        {
+            this.Id = id;
+            this.Psw = psw;
+        }
     }
 
     public class UserRepository : GenericRepository
@@ -166,6 +172,12 @@ namespace MIV.Models
         public UserRepository(string dbPath) : base(dbPath)
         {
             this.DB.CreateTable<UserEntity>();
+            if(Select<UserEntity>(@"mh0817") == null)
+            {
+                Insert(new UserEntity(@"mh0817", @"0817"));    
+            }
+
+
         }
 
 
