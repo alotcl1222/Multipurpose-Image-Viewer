@@ -6,11 +6,15 @@ using System.Data.SQLite;
 
 using Livet;
 using MIV.Utils;
+using System.Text.RegularExpressions;
 
 namespace MIV.Models
 {
     public class UserModel : NotificationObject
-    {                               
+    {             
+        private readonly Regex IdFormat = new Regex(Properties.Settings.Default.IdFormat);
+        private readonly Regex PswFormat = new Regex(Properties.Settings.Default.PswFormat);
+
         private string id;
         public string Id { get; set; }
         private string psw;
@@ -67,7 +71,7 @@ namespace MIV.Models
         /// </returns>
         public bool IsValidID()
         {
-            return true;
+            return this.IdFormat.IsMatch(this.Id ?? string.Empty);
         }
 
         /// <summary>                            
@@ -78,7 +82,7 @@ namespace MIV.Models
         /// </returns>
         public bool IsValidPsw()
         {
-            return true;
+            return this.PswFormat.IsMatch(this.Psw ?? string.Empty);
         }
 
         /// <summary>                            
@@ -129,10 +133,10 @@ namespace MIV.Models
         /// </returns>
         public string IDErrComment()
         {
-            if (!this.IsValidID()) return @"半角英数6文字で入力しろ。";
-            if (!this.Exists()) return @"そんな奴はいない";
-            if (!this.IsValidPair()) return @"ちがう";
-            return @"OKな気がする";
+            if (!this.IsValidID()) return @"ID:半角英数6文字で入力しろ。";
+            if (!this.Exists()) return @"ID:そんな奴はいない";
+            if (!this.IsValidPair()) return @"ID:ちがう";
+            return @"ID:OKな気がする";
         }
 
         /// <summary>
@@ -143,9 +147,9 @@ namespace MIV.Models
         /// </returns>
         public string PswErrComment()
         {
-            if (!this.IsValidPsw()) return @"半角数字4文字で入力しろ。";
-            if (!this.IsValidPair()) return @"ちがう";
-            return @"OKな気がする";
+            if (!this.IsValidPsw()) return @"パスワード:半角数字4文字で入力しろ。";
+            if (!this.IsValidPair()) return @"パスワード:ちがう";
+            return @"パスワード:OKな気がする";
         }
     }
 

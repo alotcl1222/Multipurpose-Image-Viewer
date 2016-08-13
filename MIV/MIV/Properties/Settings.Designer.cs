@@ -70,5 +70,29 @@ namespace MIV.Properties {
                 this["userDBPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("^[a-zA-Z0-9_\\-]{6}$")]
+        public string IdFormat {
+            get {
+                return ((string)(this["IdFormat"]));
+            }
+            set {
+                this["IdFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("^[0-9]{4}$")]
+        public string PswFormat {
+            get {
+                return ((string)(this["PswFormat"]));
+            }
+            set {
+                this["PswFormat"] = value;
+            }
+        }
     }
 }

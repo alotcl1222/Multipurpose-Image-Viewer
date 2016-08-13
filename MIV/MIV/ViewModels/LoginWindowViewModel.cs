@@ -32,6 +32,7 @@ namespace MIV.ViewModels
                 this.IdErrComment = user.IDErrComment();
                 this.ErrComment = string.Empty;
                 RaisePropertyChanged("ID");  
+                RaisePropertyChanged("IdErrComment");
             }
         }
                                                        
@@ -46,6 +47,7 @@ namespace MIV.ViewModels
                 this.PswErrComment = user.PswErrComment();
                 this.ErrComment = string.Empty;
                 RaisePropertyChanged("Psw");
+                RaisePropertyChanged("PswErrComment");
             }
         }
         private string errComment;
@@ -85,8 +87,8 @@ namespace MIV.ViewModels
             InputID = user.Id;
             InputPsw = user.Psw;
 
-            IdErrComment = @"なんか入力しろ";
-            PswErrComment = @"なんか入力しろ";
+            IdErrComment = @"IDになんか入力しろ";
+            PswErrComment = @"パスワードになんか入力しろ";
         }
 
 

@@ -14,5 +14,11 @@
     <Setting Name="userDBPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">./user.db</Value>
     </Setting>
+    <Setting Name="IdFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">^[a-zA-Z0-9_\-]{6}$</Value>
+    </Setting>
+    <Setting Name="PswFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">^[0-9]{4}$</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

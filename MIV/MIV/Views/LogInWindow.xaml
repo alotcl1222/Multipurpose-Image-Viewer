@@ -55,6 +55,9 @@
         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >Password：</TextBlock>
         <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ErrComment}"/>
 
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding IdErrComment, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding PswErrComment, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
         <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding InputID, UpdateSourceTrigger=PropertyChanged}" >
             <TextBox.ToolTip>
                 <Label Content="{Binding IdErrComment}"/>
@@ -62,7 +65,7 @@
         </TextBox>
         <PasswordBox Grid.Row="2" Grid.Column="2">
             <i:Interaction.Behaviors>
-                <l:PasswordBoxBindingSupportBehavior Password="{Binding InputPsw}" />
+                <l:PasswordBoxBindingSupportBehavior Password="{Binding InputPsw, UpdateSourceTrigger=PropertyChanged}" />
             </i:Interaction.Behaviors>
             <PasswordBox.ToolTip>
                 <Label Content="{Binding PswErrComment}"/>
