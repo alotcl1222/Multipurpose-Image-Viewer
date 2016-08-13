@@ -25,18 +25,6 @@ namespace MIV.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("feagrrsghrghr")]
-        public string currentUserID {
-            get {
-                return ((string)(this["currentUserID"]));
-            }
-            set {
-                this["currentUserID"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("6")]
         public int IdDigit {
             get {
@@ -56,6 +44,30 @@ namespace MIV.Properties {
             }
             set {
                 this["PswDigit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string currentUserID {
+            get {
+                return ((string)(this["currentUserID"]));
+            }
+            set {
+                this["currentUserID"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("./user.db")]
+        public string userDBPath {
+            get {
+                return ((string)(this["userDBPath"]));
+            }
+            set {
+                this["userDBPath"] = value;
             }
         }
     }

@@ -5,14 +5,12 @@ using System.Text;
 using System.Data.SQLite;
 
 using Livet;
+using MIV.Utils;
 
 namespace MIV.Models
 {
     public class UserModel : NotificationObject
-    {
-        /*
-         * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
-         */                                
+    {                               
         private string id;
         public string Id { get; set; }
         private string psw;
@@ -50,7 +48,15 @@ namespace MIV.Models
         /// </returns>
         public bool Exists()
         {
-            return true;
+            // 使い終わったらDB閉じるため。
+            // なくてもDisposeされる気がするけど念のため。
+            // いちいちDB開いて問い合わせるのすごい無駄だけどまあぁいいや。
+            using (var uRep = new UserRepository(Properties.Settings.Default.userDBPath))
+            {
+                var user = uRep.Select<UserEntity>(this.Id);
+                if (user == null) return false;
+                return true;
+            }
         }
 
         /// <summary>                            
@@ -82,8 +88,20 @@ namespace MIV.Models
         /// ID&pswの組み合わせが書式が正しいか
         /// </returns>
         public bool IsValidPair()
-        {     
-            return true;
+        {
+            // DB問い合わせ前に書式の妥当性検証(Openするの重そうなので)
+            if (!this.IsValidID()) return false; // 不適切なID
+            if (!this.IsValidPsw()) return false; // 不適切なPsw
+            // DB問い合わせ
+            if (!this.Exists()) return false; // 存在しないユーザ  
+
+            // DB開いてパスワード整合チェック
+            using (var uRep = new UserRepository(Properties.Settings.Default.userDBPath))
+            {
+                var user = uRep.Select<UserEntity>(this.Id);
+                // userがnullにならないことはチェック済み
+                return user.Psw.Equals(this.Psw);
+            }            
         }
                 
         /// <summary>                            
@@ -130,4 +148,24 @@ namespace MIV.Models
             return @"OKな気がする";
         }
     }
+
+    #region DB関連
+    public class UserEntity
+    {
+        [SQLite.PrimaryKey, SQLite.Indexed]
+        public string Id { get; set; }
+        public string Psw { get; set; }
+    }
+
+    public class UserRepository : GenericRepository
+    {
+        public UserRepository(string dbPath) : base(dbPath)
+        {
+            this.DB.CreateTable<UserEntity>();
+        }
+
+
+    }
+    #endregion
+
 }
