@@ -76,6 +76,7 @@
                          </i:Interaction.Triggers>
                     </Button>
                     <Button Command="{Binding LoginCommand}" Style="{StaticResource baseStyle}">Login</Button>
+                    <Button Command="{Binding LogoutCommand}" Style="{StaticResource baseStyle}">Logout</Button>
                 </StackPanel>
             </GroupBox>
             <Label Content="{Binding Source={x:Static properties:Settings.Default}, Path=currentUserID, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>

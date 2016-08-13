@@ -20,7 +20,8 @@ namespace MIV.ViewModels
     {      
         public void Initialize()
         {
-            // 起動時にログイン画面を表示
+            // 起動時にログイン画面を表示   
+            Properties.Settings.Default.currentUserID = @"-----";
             Messenger.Raise(new Livet.Messaging.TransitionMessage(
                 new LoginWindowViewModel(), "Transition"));
         }
@@ -112,9 +113,25 @@ namespace MIV.ViewModels
                             new LoginWindowViewModel(), "Transition"));
                     });
                 }
-                return loginCommand;                  
+                return loginCommand;
             }
-        }               
+        }                            
+
+        Livet.Commands.ViewModelCommand logoutCommand;
+        public ICommand LogoutCommand
+        {
+            get
+            {
+                if (logoutCommand == null)
+                {
+                    logoutCommand = new Livet.Commands.ViewModelCommand(() =>
+                    {
+                        Properties.Settings.Default.currentUserID = @"-----";
+                    });
+                }
+                return logoutCommand;
+            }
+        }
     }
       
     public class NodeViewModel : Livet.ViewModel, INode
