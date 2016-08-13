@@ -123,6 +123,7 @@
     <Compile Include="SQLite.cs" />
     <Compile Include="SQLiteAsync.cs" />
     <Compile Include="Utils\GenericRepository.cs" />
+    <Compile Include="Utils\SafePassword.cs" />
     <Compile Include="ViewModels\LoginWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">

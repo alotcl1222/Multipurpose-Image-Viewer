@@ -104,7 +104,7 @@ namespace MIV.Models
             {
                 var user = uRep.Select<UserEntity>(this.Id);
                 // userがnullにならないことはチェック済み
-                return user.Psw.Equals(this.Psw);
+                return user.Psw.Equals(SafePassword.GetStretchedPassword(this.Id, this.Psw));
             }            
         }
                 
@@ -174,13 +174,9 @@ namespace MIV.Models
             this.DB.CreateTable<UserEntity>();
             if(Select<UserEntity>(@"mh0817") == null)
             {
-                Insert(new UserEntity(@"mh0817", @"0817"));    
-            }
-
-
-        }
-
-
+                Insert(new UserEntity(@"mh0817", SafePassword.GetStretchedPassword(@"mh0817", @"0817")));    
+            }        
+        }    
     }
     #endregion
 

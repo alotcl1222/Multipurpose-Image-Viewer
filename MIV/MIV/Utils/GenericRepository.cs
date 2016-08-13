@@ -38,9 +38,16 @@ namespace MIV.Utils
         #endregion
 
         #region Generic Repository
-        public void Insert<T>(T entity)
-        {
-            int iRes = DB.Insert(entity);
+        virtual public void Insert<T>(T entity)
+        {            
+            try
+            {
+                int iRes = DB.Insert(entity);
+            }      
+            catch
+            {
+                // 失敗。すでにあるprimary keyを追加した時とか
+            }                
             return;
         }
 
