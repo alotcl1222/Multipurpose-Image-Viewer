@@ -134,8 +134,7 @@ namespace MIV.Models
         public string IDErrComment()
         {
             if (!this.IsValidID()) return @"ID:半角英数6文字で入力しろ。";
-            if (!this.Exists()) return @"ID:そんな奴はいない";
-            if (!this.IsValidPair()) return @"ID:ちがう";
+            if (!this.Exists()) return @"ID:そんな奴はいない"; 
             return @"ID:OKな気がする";
         }
 
